@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB45EE9822783A2C006EC3B4 /* cJSON.c in Sources */ = {isa = PBXBuildFile; fileRef = AB45EE9622783A2C006EC3B4 /* cJSON.c */; };
 		ABDE43E02276A6540003E93E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = ABDE43DF2276A6540003E93E /* main.m */; };
 		ABDE43E82276A6D00003E93E /* hancc_alloc_util.c in Sources */ = {isa = PBXBuildFile; fileRef = ABDE43E62276A6D00003E93E /* hancc_alloc_util.c */; };
 		ABDE43EB2276A6DD0003E93E /* hancc_json_util.c in Sources */ = {isa = PBXBuildFile; fileRef = ABDE43EA2276A6DD0003E93E /* hancc_json_util.c */; };
@@ -25,6 +26,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AB45EE9622783A2C006EC3B4 /* cJSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cJSON.c; sourceTree = "<group>"; };
+		AB45EE9722783A2C006EC3B4 /* cJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cJSON.h; sourceTree = "<group>"; };
 		ABDE43DC2276A6540003E93E /* hancc_util_chacha */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = hancc_util_chacha; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABDE43DF2276A6540003E93E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		ABDE43E62276A6D00003E93E /* hancc_alloc_util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hancc_alloc_util.c; sourceTree = "<group>"; };
@@ -63,6 +66,8 @@
 		ABDE43DE2276A6540003E93E /* hancc_util_chacha */ = {
 			isa = PBXGroup;
 			children = (
+				AB45EE9622783A2C006EC3B4 /* cJSON.c */,
+				AB45EE9722783A2C006EC3B4 /* cJSON.h */,
 				ABDE43E92276A6DD0003E93E /* hancc_json_util.h */,
 				ABDE43EA2276A6DD0003E93E /* hancc_json_util.c */,
 				ABDE43E72276A6D00003E93E /* hancc_alloc_util.h */,
@@ -129,6 +134,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ABDE43E02276A6540003E93E /* main.m in Sources */,
+				AB45EE9822783A2C006EC3B4 /* cJSON.c in Sources */,
 				ABDE43EB2276A6DD0003E93E /* hancc_json_util.c in Sources */,
 				ABDE43E82276A6D00003E93E /* hancc_alloc_util.c in Sources */,
 			);

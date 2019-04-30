@@ -10,6 +10,9 @@
 #include "hancc_alloc_util.h"
 #include "hancc_json_util.h"
 #include <stdlib.h>
+#include "cJSON.h"
+
+
 
 #pragma pack(push) // 将当前pack设置压栈保存
 #pragma pack(1) // 必须在结构体定义之前使用
@@ -91,6 +94,170 @@ void HexToStr(unsigned char *pbDest, unsigned char *pbSrc, int nLen)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+void cJSON_test1(){
+    char *data = "{\"love\":[\"LOL\",\"Go shopping\"]}";
+    printf("长度:%ld\n",strlen(data));
+    
+    //从缓冲区中解析出JSON结构
+    cJSON * json= cJSON_Parse(data);
+    
+    //将传入的JSON结构转化为字符串 并打印
+    char *json_data = NULL;
+    printf("data:%s\n",json_data = cJSON_Print(json));
+    
+    cJSON_Delete(json);
+}
+void cJSON_test2(){
+    //创建一个空的文档（对象）
+    cJSON *json = cJSON_CreateObject();
+    
+    //向文档中增加一个键值对{"name":"王大锤"}
+    cJSON_AddItemToObject(json,"name",cJSON_CreateString("王大锤"));
+    //向文档中添加一个键值对
+    //cJSON_AddItemToObject(json,"age",cJSON_CreateNumber(29));
+    cJSON_AddNumberToObject(json,"age",29);
+    
+    cJSON *array = NULL;
+    cJSON_AddItemToObject(json,"love",array=cJSON_CreateArray());
+    cJSON_AddItemToArray(array,cJSON_CreateString("LOL"));
+    cJSON_AddItemToArray(array,cJSON_CreateString("NBA"));
+    cJSON_AddItemToArray(array,cJSON_CreateString("Go shopping"));
+    
+    cJSON_AddNumberToObject(json,"score",59);
+    cJSON_AddStringToObject(json,"address","beijing");
+    
+    //将json结构格式化到缓冲区
+    char *buf = cJSON_Print(json);
+    printf("data:%s\n",buf = cJSON_Print(json));
+    //释放json结构所占用的内存
+    cJSON_Delete(json);
+}
+void cJSON_test3(){
+    //先创建空对象
+    cJSON *json = cJSON_CreateObject();
+    //在对象上添加键值对
+    cJSON_AddStringToObject(json,"country","china");
+    //添加数组
+    cJSON *array = NULL;
+    cJSON_AddItemToObject(json,"stars",array=cJSON_CreateArray());
+    
+    //在数组上添加对象
+    cJSON *obj =  cJSON_CreateObject();
+    //在对象上添加键值对
+    cJSON_AddItemToObject(obj,"name",cJSON_CreateString("andy"));
+    cJSON_AddItemToObject(obj,"address",cJSON_CreateString("HK"));
+    cJSON_AddNumberToObject(obj, "phoneNum", 18665945497);
+    cJSON_AddNumberToObject(obj, "temperature", -24.5f);
+    cJSON_AddItemToArray(array,obj);
+    
+    
+    cJSON *obj1 = cJSON_CreateObject();
+    cJSON_AddItemToObject(obj1,"name",cJSON_CreateString("Faye"));
+    cJSON_AddStringToObject(obj1,"address","beijing");
+    
+    cJSON_AddItemToArray(array,obj1);
+    
+    
+    cJSON *obj2 = cJSON_CreateObject();
+    cJSON_AddStringToObject(obj2,"name","eddie");
+    cJSON_AddStringToObject(obj2,"address","TaiWan");
+    cJSON_AddItemToArray(array,obj2);
+    
+    cJSON *node = NULL;
+    node = cJSON_GetObjectItem(obj,"temperature");
+    if(node == NULL){
+        printf("country node == NULL\n");
+    }
+    else{
+        printf("found country node,country:%f\n",node->valuedouble);
+    }
+    
+    
+    //将json结构格式化到缓冲区
+    char *buf = cJSON_Print(json);
+    printf("data:%s\n",buf = cJSON_Print(json));
+    //    free(buf);
+    cJSON_Delete(json);
+}
+
+void cJSON_test4(){
+    char *string = "{\"family\":[\"father\",\"mother\",\"brother\",\"sister\",\"somebody\"]}";
+    //char *string ="{\"arr\":[{\"name\":\"sensorA\",\"temperature\":12.05,\"pressure\":10.05,\"humidity\":30.06},{\"name\":\"sensorB\",\"temperature\":22.07,\"pressure\":10.010,\"humidity\":50.66},{\"name\":\"sensorC\",\"temperature\":0.17,\"pressure\":1.010,\"humidity\":0.88}]}";
+    //从缓冲区中解析出JSON结构
+    cJSON *json = cJSON_Parse(string);
+    cJSON *node = NULL;
+    
+    node = cJSON_GetObjectItem(json,"family");
+    
+    // 判断是什么类型的
+    if(node->type == cJSON_Array){
+        //非array类型的node 被当做array获取size的大小是未定义的行为 不要使用
+        printf("array size is %d\n\n",cJSON_GetArraySize(node));
+    }
+    
+    
+    cJSON *tnode = NULL;
+    int size = cJSON_GetArraySize(node);
+    int i;
+    for(i=0;i<size;i++){
+        tnode = cJSON_GetArrayItem(node,i);
+        if(tnode->type == cJSON_String){
+            printf("value[%d]:%s\n",i,tnode->valuestring);
+        }else{
+            printf("node' type is not string\n");
+        }
+    }
+    printf("\n\n");
+    
+    // 遍历
+    cJSON_ArrayForEach(tnode,node){
+        if(tnode->type == cJSON_String){
+            printf("int forEach: vale:%s\n",tnode->valuestring);
+        }else{
+            printf("node's type is not string\n");
+        }
+    }
+}
+void cJSON_test5(){
+    char *data = "{\"love\":[\"LOL\",\"Go shopping\"]}";
+    printf("长度:%ld\n",strlen(data));
+    
+    //从缓冲区中解析出JSON结构
+    cJSON * json= cJSON_Parse(data);
+    
+    //将传入的JSON结构转化为字符串 并打印
+    char *json_data = NULL;
+    printf("data:%s\n",json_data = cJSON_Print(json));
+    
+    free(json_data);
+    cJSON_Delete(json);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         // 1.原始协议数据
@@ -125,7 +292,7 @@ int main(int argc, const char * argv[]) {
             0x2e,0x38,0x38,0x7d,0x5d,0x7d,
             0xaa,0xbb
         };
-        
+ /*🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊*/
         // 2.原始协议数据转化为结构体数据
         universalCommunicateFrame myFrame;
         myFrame.Frame_flag      = desData[0];
@@ -149,8 +316,17 @@ int main(int argc, const char * argv[]) {
         //            printf("🍉:%c\n",myFrame.Frame_dataBody[jj]);
         //        }
         printf("0x%04x\n",myFrame.Frame_CRC16);
+/*🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊*/
+
         
-        //  3.有效数据区数据转换为json数据
+        
+        
+        
+        
+        
+/*🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹*/
+#if 0
+        //  3.有效数据区数据转换为json数据   验证hancc_json_util
         jsonObj *rootJson = jsonParse((char *)myFrame.Frame_dataBody);
 //        printf("aaa = %d\n", getJsonObjInteger(rootJson, "aaa"));
         
@@ -182,13 +358,8 @@ int main(int argc, const char * argv[]) {
         
         
         
-        //  单独去obj可以，用工具printJsonObj都正常。但是用循环取的话就不行
-        
-        
-        
-        
-        
-        
+        //  问题:hancc_json_util,单独去obj可以，用工具printJsonObj都正常。但是用循环取的话就不行
+     
         printf("🍎list总长度:%d\n",ArrJson->count);
         for (int index = 0; index < ArrJson->count; index ++) {
             jsonObj *temp = getJsonArrObject(ArrJson, 0);
@@ -201,11 +372,56 @@ int main(int argc, const char * argv[]) {
             float pressure = getJsonObjFloat(temp,"pressure");
             printf("pressure = %f\n\n",pressure);
         }
-        
-        
-        
-        
         hancc_mem_free(myFrame.Frame_dataBody);
+#endif
+/*🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹*/
+        
+        
+        
+/*🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶*/
+//        cJSON_test1();
+//        cJSON_test2();
+//        cJSON_test3();
+//        cJSON_test4();
+/*🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶*/
+
+//        cJSON * json= cJSON_Parse((const char *)myFrame.Frame_dataBody);
+        cJSON * json= cJSON_Parse("{\"arr\":[{\"name\":\"sensorA\",\"temperature\":12.05,\"pressure\":10.05,\"humidity\":30.06},{\"name\":\"sensorB\",\"temperature\":22.07,\"pressure\":10.010,\"humidity\":50.66},{\"name\":\"sensorC\",\"temperature\":0.17,\"pressure\":1.010,\"humidity\":0.88}]}");
+        
+        cJSON *node = cJSON_GetObjectItem(json,"arr");
+        // 判断是什么类型的
+        if(node->type == cJSON_Array){
+            //非array类型的node 被当做array获取size的大小是未定义的行为 不要使用
+            printf("array size is %d\n\n",cJSON_GetArraySize(node));
+        }
+        cJSON *tnode = NULL;
+        // 遍历
+        cJSON_ArrayForEach(tnode,node){
+            printf("🧤name vale:%s\n",cJSON_GetObjectItem(tnode, "name")->valuestring);
+            printf("🧤temperature vale:%lf\n",cJSON_GetObjectItem(tnode, "temperature")->valuedouble);
+            printf("🧤humidity vale:%lf\n",cJSON_GetObjectItem(tnode, "humidity")->valuedouble);
+            printf("🧤pressure vale:%lf\n",cJSON_GetObjectItem(tnode, "pressure")->valuedouble);
+            
+            cJSON_Delete(tnode);
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
