@@ -52,8 +52,8 @@ typedef struct jsonPack_t {
     jsonPack *prev;
 } jsonPack_t;
 
-#define MEM_JSON_SIZE       2048
-#define PACK_JSON_SIZE      2048
+#define MEM_JSON_SIZE       1*1024
+#define PACK_JSON_SIZE      1*1024
 
 //parse json string
 jsonObj *jsonParse(char *str);
