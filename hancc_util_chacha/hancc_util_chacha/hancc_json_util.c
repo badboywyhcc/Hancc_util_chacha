@@ -770,3 +770,57 @@ int addJsonIntArr(jsonPack *root, int num){
 char *getPackJsonString(void){
     return packJsonMem;
 }
+void test(){
+    
+    /*🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹*/
+#if 0
+    //  3.有效数据区数据转换为json数据   验证hancc_json_util
+    jsonObj *rootJson = jsonParse((char *)myFrame.Frame_dataBody);
+    //        printf("aaa = %d\n", getJsonObjInteger(rootJson, "aaa"));
+    
+    // 取出根元素
+    jsonObj *ArrJson =jsonArray(rootJson, "arr");
+    // 取出数组中的第1个元素
+    jsonObj *obj1 = getJsonArrObject(ArrJson, 0);
+    printJsonObj(obj1);
+    
+    // 取出数组中的第2个元素
+    jsonObj *obj2 = getJsonArrObject(ArrJson, 1);
+    printJsonObj(obj2);
+    
+    // 取出数组中的第3个元素
+    jsonObj *obj3 = getJsonArrObject(ArrJson, 2);
+    printJsonObj(obj3);
+    
+    
+    
+    jsonObj *temp = getJsonArrObject(ArrJson, 0);
+    char *name = getJsonObjString(temp,"name");
+    //        printf("name = %s\n",name);
+    //        float temperature = getJsonObjFloat(temp,"temperature");
+    //        printf("temperature = %f\n",temperature);
+    //        float humidity = getJsonObjFloat(temp,"humidity");
+    //        printf("humidity = %f\n",humidity);
+    //        float pressure = getJsonObjFloat(temp,"pressure");
+    //        printf("pressure = %f\n\n",pressure);
+    
+    
+    
+    //  问题:hancc_json_util,单独去obj可以，用工具printJsonObj都正常。但是用循环取的话就不行
+    
+    printf("🍎list总长度:%d\n",ArrJson->count);
+    for (int index = 0; index < ArrJson->count; index ++) {
+        jsonObj *temp = getJsonArrObject(ArrJson, 0);
+        char *name = getJsonObjString(temp,"name");
+        printf("name = %s\n",name);
+        float temperature = getJsonObjFloat(temp,"temperature");
+        printf("temperature = %f\n",temperature);
+        float humidity = getJsonObjFloat(temp,"humidity");
+        printf("humidity = %f\n",humidity);
+        float pressure = getJsonObjFloat(temp,"pressure");
+        printf("pressure = %f\n\n",pressure);
+    }
+    hancc_mem_free(myFrame.Frame_dataBody);
+#endif
+    /*🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹*/
+}

@@ -97,18 +97,6 @@ void HexToStr(unsigned char *pbDest, unsigned char *pbSrc, int nLen)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 void cJSON_test1(){
     char *data = "{\"love\":[\"LOL\",\"Go shopping\"]}";
     printf("长度:%ld\n",strlen(data));
@@ -119,7 +107,7 @@ void cJSON_test1(){
     //将传入的JSON结构转化为字符串 并打印
     char *json_data = NULL;
     printf("data:%s\n",json_data = cJSON_Print(json));
-    
+    hancc_mem_free(json_data);
     cJSON_Delete(json);
 }
 void cJSON_test2(){
@@ -144,6 +132,7 @@ void cJSON_test2(){
     //将json结构格式化到缓冲区
     char *buf = cJSON_Print(json);
     printf("data:%s\n",buf = cJSON_Print(json));
+    hancc_mem_free(buf);
     //释放json结构所占用的内存
     cJSON_Delete(json);
 }
@@ -192,6 +181,8 @@ void cJSON_test3(){
     char *buf = cJSON_Print(json);
     printf("data:%s\n",buf = cJSON_Print(json));
     //    free(buf);
+    hancc_mem_free(buf);
+
     cJSON_Delete(json);
 }
 
@@ -244,7 +235,7 @@ void cJSON_test5(){
     char *json_data = NULL;
     printf("data:%s\n",json_data = cJSON_Print(json));
     
-    free(json_data);
+    hancc_mem_free(json_data);
     cJSON_Delete(json);
 }
 
@@ -277,6 +268,132 @@ char *strrpc(char *str,char *oldstr,char *newstr){
     strcpy(str,bstr);
     return str;
 }
+
+
+/**
+ 原始数据转换为json对象
+ @param data
+ */
+void dataToJsonObj(unsigned char *data){
+    cJSON * rootJson=cJSON_Parse((const char *)data);
+    if(rootJson != NULL){
+        cJSON *arrNode = cJSON_GetObjectItem(rootJson,"arr");
+        // 判断是什么类型的
+        if(arrNode->type == cJSON_Array){
+            //非array类型的node 被当做array获取size的大小是未定义的行为 不要使用
+            printf("array size is %d\n\n",cJSON_GetArraySize(arrNode));
+        }
+        cJSON *tnode = NULL;
+        // 遍历
+        cJSON_ArrayForEach(tnode,arrNode){
+            // tnode 就是具体的节点
+            printf("🧤name vale:%s\n",cJSON_GetObjectItem(tnode, "name")->valuestring);
+            printf("🧤temperature vale:%lf\n",cJSON_GetObjectItem(tnode, "temperature")->valuedouble);
+            printf("🧤humidity vale:%lf\n",cJSON_GetObjectItem(tnode, "humidity")->valuedouble);
+            printf("🧤pressure vale:%lf\n",cJSON_GetObjectItem(tnode, "pressure")->valuedouble);
+            printf("\n");
+        }
+        cJSON_Delete(rootJson);
+    }else{
+        printf("⚠️解析json字符串失败,可能是内存不够或者json格式有误!!!");
+    }
+}
+
+/**
+ json对象转换为原始数据
+ */
+void jsonObjToData(){
+    //先创建空对象
+    cJSON *createRootJson = cJSON_CreateObject();
+    //添加数组
+    cJSON *array = NULL;
+    cJSON_AddItemToObject(createRootJson,"arr",array=cJSON_CreateArray());
+    
+#if 0
+        cJSON *obj1 = cJSON_CreateObject();
+        cJSON_AddItemToObject(obj1,"name",cJSON_CreateString("sensorA"));
+        cJSON_AddNumberToObject(obj1,"temperature",12.05f);
+        cJSON_AddNumberToObject(obj1,"humidity", 30.06f);
+        cJSON_AddNumberToObject(obj1,"pressure", 10.05f);
+        cJSON_AddItemToArray(array,obj1);
+
+
+
+        cJSON *obj2 = cJSON_CreateObject();
+        cJSON_AddItemToObject(obj2,"name",cJSON_CreateString("sensorB"));
+        cJSON_AddNumberToObject(obj2,"temperature",22.07f);
+        cJSON_AddNumberToObject(obj2,"humidity", 50.66f);
+        cJSON_AddNumberToObject(obj2,"pressure", 10.01f);
+        cJSON_AddItemToArray(array,obj2);
+
+
+
+        cJSON *obj3 = cJSON_CreateObject();
+        cJSON_AddItemToObject(obj3,"name",cJSON_CreateString("sensorC"));
+        cJSON_AddNumberToObject(obj3,"temperature",0.17f);
+        cJSON_AddNumberToObject(obj3,"humidity", 0.88f);
+        cJSON_AddNumberToObject(obj3,"pressure", 1.01f);
+        cJSON_AddItemToArray(array,obj3);
+
+        cJSON *obj4 = cJSON_CreateObject();
+        cJSON_AddItemToObject(obj4,"name",cJSON_CreateString("sensorC"));
+        cJSON_AddNumberToObject(obj4,"temperature",0.17f);
+        cJSON_AddNumberToObject(obj4,"humidity", 0.88f);
+        cJSON_AddNumberToObject(obj4,"pressure", 1.01f);
+        cJSON_AddItemToArray(array,obj4);
+    
+#else
+        for(int hhuu = 0; hhuu < 3 ;hhuu++){
+            cJSON *obj = cJSON_CreateObject();
+            if(obj != NULL){
+                cJSON_AddItemToObject(obj,"name",cJSON_CreateString("sensorC"));
+                cJSON_AddNumberToObject(obj,"temperature",0.17f);
+                cJSON_AddNumberToObject(obj,"humidity", 0.88f);
+                cJSON_AddNumberToObject(obj,"pressure", 1.01f);
+                cJSON_AddItemToArray(array,obj);
+            }else{
+                printf("⚠️解析json字符串失败,可能是内存不够或者json格式有误!!!");
+            }
+            
+        }
+#endif
+
+    char *createRootJsonStr = cJSON_Print(createRootJson);
+//    printf("data:%s\n",createRootJsonStr);
+    
+        cJSON * json4=cJSON_Parse(createRootJsonStr);
+        cJSON *node1 = cJSON_GetObjectItem(json4,"arr");
+        // 判断是什么类型的
+        if(node1->type == cJSON_Array){
+            //非array类型的node 被当做array获取size的大小是未定义的行为 不要使用
+            printf("array size is %d\n\n",cJSON_GetArraySize(node1));
+        }
+        cJSON *tnode1 = NULL;
+        // 遍历
+        cJSON_ArrayForEach(tnode1,node1){
+            printf("🍉name vale:%s\n",cJSON_GetObjectItem(tnode1, "name")->valuestring);
+            printf("🍉temperature vale:%lf\n",cJSON_GetObjectItem(tnode1, "temperature")->valuedouble);
+            printf("🍉humidity vale:%lf\n",cJSON_GetObjectItem(tnode1, "humidity")->valuedouble);
+            printf("🍉pressure vale:%lf\n",cJSON_GetObjectItem(tnode1, "pressure")->valuedouble);
+            printf("\n");
+        }
+        cJSON_Delete(json4);
+//        printf("🐙:%d\n",hhj);
+//    }
+    
+    unsigned char *TXD_Frame_dataBody  = hancc_mem_malloc((unsigned int)strlen(createRootJsonStr));
+    memset(TXD_Frame_dataBody, 0x00, (unsigned int)strlen(createRootJsonStr));
+    memcpy(TXD_Frame_dataBody, createRootJsonStr, (unsigned int)strlen(createRootJsonStr));
+    printf("✳️data长度:%ld\n",strlen(createRootJsonStr));
+    printf("✳️data:%s\n",TXD_Frame_dataBody);
+    hancc_mem_free(TXD_Frame_dataBody);
+    
+    
+    cJSON_Delete(createRootJson);
+    hancc_mem_free(createRootJsonStr);
+}
+
+
 
 
 int main(int argc, const char * argv[]) {
@@ -342,208 +459,26 @@ int main(int argc, const char * argv[]) {
         printf("0x%04x\n",myFrame.Frame_CRC16);
 /*🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊*/
 
-        
-        
-        
-        
-        
-        
-/*🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹*/
-#if 0
-        //  3.有效数据区数据转换为json数据   验证hancc_json_util
-        jsonObj *rootJson = jsonParse((char *)myFrame.Frame_dataBody);
-//        printf("aaa = %d\n", getJsonObjInteger(rootJson, "aaa"));
-        
-        // 取出根元素
-        jsonObj *ArrJson =jsonArray(rootJson, "arr");
-        // 取出数组中的第1个元素
-        jsonObj *obj1 = getJsonArrObject(ArrJson, 0);
-        printJsonObj(obj1);
-
-        // 取出数组中的第2个元素
-        jsonObj *obj2 = getJsonArrObject(ArrJson, 1);
-        printJsonObj(obj2);
-
-        // 取出数组中的第3个元素
-        jsonObj *obj3 = getJsonArrObject(ArrJson, 2);
-        printJsonObj(obj3);
-
-        
-        
-        jsonObj *temp = getJsonArrObject(ArrJson, 0);
-        char *name = getJsonObjString(temp,"name");
-//        printf("name = %s\n",name);
-//        float temperature = getJsonObjFloat(temp,"temperature");
-//        printf("temperature = %f\n",temperature);
-//        float humidity = getJsonObjFloat(temp,"humidity");
-//        printf("humidity = %f\n",humidity);
-//        float pressure = getJsonObjFloat(temp,"pressure");
-//        printf("pressure = %f\n\n",pressure);
-        
-        
-        
-        //  问题:hancc_json_util,单独去obj可以，用工具printJsonObj都正常。但是用循环取的话就不行
-     
-        printf("🍎list总长度:%d\n",ArrJson->count);
-        for (int index = 0; index < ArrJson->count; index ++) {
-            jsonObj *temp = getJsonArrObject(ArrJson, 0);
-            char *name = getJsonObjString(temp,"name");
-            printf("name = %s\n",name);
-            float temperature = getJsonObjFloat(temp,"temperature");
-            printf("temperature = %f\n",temperature);
-            float humidity = getJsonObjFloat(temp,"humidity");
-            printf("humidity = %f\n",humidity);
-            float pressure = getJsonObjFloat(temp,"pressure");
-            printf("pressure = %f\n\n",pressure);
-        }
-        hancc_mem_free(myFrame.Frame_dataBody);
-#endif
-/*🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹🐹*/
-        
-        
-        
-/*🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶*/
-//        cJSON_test1();
-//        cJSON_test2();
-//        cJSON_test3();
-//        cJSON_test4();
-/*🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶*/
 #endif
 
 //        cJSON * json1= cJSON_Parse("{\"arr\":[{\"name\":\"sensorA\",\"temperature\":12.05,\"pressure\":10.05,\"humidity\":30.06},{\"name\":\"sensorB\",\"temperature\":22.07,\"pressure\":10.010,\"humidity\":50.66},{\"name\":\"sensorC\",\"temperature\":0.17,\"pressure\":1.010,\"humidity\":0.88}]}");
 
 //        printf("💟:%ld\n",sizeof(cJSON));  //64字节
         
-        for(int hh = 0; hh < 5 ;hh++){
-            
-            
-            
-            cJSON * rootJson=cJSON_Parse((const char *)myFrame.Frame_dataBody);
-            if(rootJson != NULL){
-                cJSON *arrNode = cJSON_GetObjectItem(rootJson,"arr");
-                // 判断是什么类型的
-                if(arrNode->type == cJSON_Array){
-                    //非array类型的node 被当做array获取size的大小是未定义的行为 不要使用
-                    printf("array size is %d\n\n",cJSON_GetArraySize(arrNode));
-                }
-                cJSON *tnode = NULL;
-                // 遍历
-                cJSON_ArrayForEach(tnode,arrNode){
-                    printf("🧤name vale:%s\n",cJSON_GetObjectItem(tnode, "name")->valuestring);
-                    printf("🧤temperature vale:%lf\n",cJSON_GetObjectItem(tnode, "temperature")->valuedouble);
-                    printf("🧤humidity vale:%lf\n",cJSON_GetObjectItem(tnode, "humidity")->valuedouble);
-                    printf("🧤pressure vale:%lf\n",cJSON_GetObjectItem(tnode, "pressure")->valuedouble);
-                    printf("\n");
-                }
-                cJSON_Delete(rootJson);
-                printf("🍎:%d\n",hh);
-            }else{
-                printf("⚠️解析json字符串失败,可能是内存不够或者json格式有误!!!");
-            }
-  
-            
-            
-            
-            
+        for(int hh = 0; hh < 100 ;hh++){
+            // 原始数据转json
+            dataToJsonObj(myFrame.Frame_dataBody);
+            // json转原始数据
+            jsonObjToData();
+            printf("🍎:%d\n",hh);
         }
         
         
-        
-        
-        //先创建空对象
-        cJSON *createRootJson = cJSON_CreateObject();
-        //添加数组
-        cJSON *array = NULL;
-        cJSON_AddItemToObject(createRootJson,"arr",array=cJSON_CreateArray());
-        
-    
-//        cJSON *obj1 = cJSON_CreateObject();
-//        cJSON_AddItemToObject(obj1,"name",cJSON_CreateString("sensorA"));
-//        cJSON_AddNumberToObject(obj1,"temperature",12.05f);
-//        cJSON_AddNumberToObject(obj1,"humidity", 30.06f);
-//        cJSON_AddNumberToObject(obj1,"pressure", 10.05f);
-//        cJSON_AddItemToArray(array,obj1);
-//        
-//        
-//        
-//        cJSON *obj2 = cJSON_CreateObject();
-//        cJSON_AddItemToObject(obj2,"name",cJSON_CreateString("sensorB"));
-//        cJSON_AddNumberToObject(obj2,"temperature",22.07f);
-//        cJSON_AddNumberToObject(obj2,"humidity", 50.66f);
-//        cJSON_AddNumberToObject(obj2,"pressure", 10.01f);
-//        cJSON_AddItemToArray(array,obj2);
-//
-//        
-//        
-//        cJSON *obj3 = cJSON_CreateObject();
-//        cJSON_AddItemToObject(obj3,"name",cJSON_CreateString("sensorC"));
-//        cJSON_AddNumberToObject(obj3,"temperature",0.17f);
-//        cJSON_AddNumberToObject(obj3,"humidity", 0.88f);
-//        cJSON_AddNumberToObject(obj3,"pressure", 1.01f);
-//        cJSON_AddItemToArray(array,obj3);
-//        
-//        cJSON *obj4 = cJSON_CreateObject();
-//        cJSON_AddItemToObject(obj4,"name",cJSON_CreateString("sensorC"));
-//        cJSON_AddNumberToObject(obj4,"temperature",0.17f);
-//        cJSON_AddNumberToObject(obj4,"humidity", 0.88f);
-//        cJSON_AddNumberToObject(obj4,"pressure", 1.01f);
-//        cJSON_AddItemToArray(array,obj4);
-        
-        
-        for(int hhuu = 0; hhuu < 3 ;hhuu++){
-            cJSON *obj = cJSON_CreateObject();
-            if(obj != NULL){
-                cJSON_AddItemToObject(obj,"name",cJSON_CreateString("sensorC"));
-                cJSON_AddNumberToObject(obj,"temperature",0.17f);
-                cJSON_AddNumberToObject(obj,"humidity", 0.88f);
-                cJSON_AddNumberToObject(obj,"pressure", 1.01f);
-                cJSON_AddItemToArray(array,obj);
-            }else{
-                printf("⚠️解析json字符串失败,可能是内存不够或者json格式有误!!!");
-            }
-
-        }
-        
-
-        
-        
-        
-        
-        
-        char *createRootJsonStr = cJSON_Print(createRootJson);
-        printf("data:%s\n",createRootJsonStr);
-        for(int hhj = 0; hhj < 5 ;hhj++){
-            cJSON * json4=cJSON_Parse(createRootJsonStr);
-            cJSON *node1 = cJSON_GetObjectItem(json4,"arr");
-            // 判断是什么类型的
-            if(node1->type == cJSON_Array){
-                //非array类型的node 被当做array获取size的大小是未定义的行为 不要使用
-                printf("array size is %d\n\n",cJSON_GetArraySize(node1));
-            }
-            cJSON *tnode1 = NULL;
-            // 遍历
-            cJSON_ArrayForEach(tnode1,node1){
-                printf("🍉name vale:%s\n",cJSON_GetObjectItem(tnode1, "name")->valuestring);
-                printf("🍉temperature vale:%lf\n",cJSON_GetObjectItem(tnode1, "temperature")->valuedouble);
-                printf("🍉humidity vale:%lf\n",cJSON_GetObjectItem(tnode1, "humidity")->valuedouble);
-                printf("🍉pressure vale:%lf\n",cJSON_GetObjectItem(tnode1, "pressure")->valuedouble);
-                printf("\n");
-            }
-            cJSON_Delete(json4);
-            printf("🐙:%d\n",hhj);
-        }
-    
-        unsigned char *TXD_Frame_dataBody  = hancc_mem_malloc((unsigned int)strlen(createRootJsonStr));
-        memset(TXD_Frame_dataBody, 0x00, (unsigned int)strlen(createRootJsonStr));
-        memcpy(TXD_Frame_dataBody, createRootJsonStr, (unsigned int)strlen(createRootJsonStr));
-        
-        cJSON_Delete(createRootJson);
-        hancc_mem_free(createRootJsonStr);
         
         // 打印内存使用情况
 //        hancc_mem_print();
         
-        printf("🦊:%s\n",createRootJsonStr);
+        
         
         
         
